@@ -15,6 +15,7 @@ class Node:
             'recipient': transaction['recipient'],
             'amount': transaction['amount']
         })
+        #11
 
         if len(transactions) == self.block_size:
             self.mine(self.proof_of_work())
