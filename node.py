@@ -4,20 +4,20 @@ from time import time
 
 class Node:
     def __init__(self, block_size=1):
-        self.chain = []
-        self.draft_transactions = []
+        self.chain = self.__get_chain()
+        self.draft_transactions = self.get_draft_transactions()
         self.block_size = block_size
 
     def add_transaction(self, transaction):
-        transactions = self.get_draft_transactions()
+        transactions = self.draft_transactions
         transactions.append({
             'sender': transaction['sender'],
             'recipient': transaction['recipient'],
-            'amount': transaction['amount']
+            'amount': transaction['amount'],
+            'message': transaction['message']
         })
-        #11
 
-        if len(transactions) == self.block_size:
+        if len(transactions) >= self.block_size:
             self.mine(self.proof_of_work())
 
         if len(self.chain) == 0:
@@ -45,7 +45,19 @@ class Node:
 
     def __get_chain(self):
         # get the chain from persistent storage
-        return self.chain
+
+        #this is temp code to generate Genesis block
+        block = {
+            'index': 1,
+            'timestamp': time(),
+            'transactions': [],
+            'proof': 100,
+            'previous_hash': 1
+        }
+
+        chain = []
+        chain.append(block)
+        return chain
 
     def __hash(self, block):
         block_string = json.dumps(block, sort_keys=True).encode()
@@ -87,10 +99,10 @@ class Node:
    
     def get_draft_transactions(self):
         # get list current unmined transactions from persisitent storage
-        return self.draft_transactions
+        return []
 
     @property
     def last_block(self):
-        return self.__get_chain()[-1]
+        return self.chain[-1]
 
 
